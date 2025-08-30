@@ -44,7 +44,7 @@ tasks.jar {
     group = "build"
     description = "Build fat JAR cho Windows"
     archiveClassifier.set("windows")
-
+    destinationDirectory.set(layout.buildDirectory.dir("../").get().asFile)
     dependencies {
         implementation("org.bytedeco:ffmpeg:6.1.2-1.5.11:windows-x86_64")
     }
