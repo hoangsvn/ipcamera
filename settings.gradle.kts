@@ -1,1 +1,1 @@
-rootProject.name = "cms"
+rootProject.name = "ipcamera"

@@ -11,7 +11,6 @@ public class BasePanel implements Render {
     @Override
     public void init() {
         try {
-            // Đặt Look and Feel về Windows
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             e.printStackTrace();
@@ -21,40 +20,6 @@ public class BasePanel implements Render {
 
         frame.setFocusable(true);
         frame.requestFocusInWindow();
-
-        JMenuBar menuBar = new JMenuBar();
-        // Menu Device
-        JMenu menuDevice = new JMenu("Device");
-        JMenuItem infoItem = new JMenuItem("Info");
-        JMenuItem wifiItem = new JMenuItem("WiFi");
-
-        infoItem.addActionListener(e ->
-                JOptionPane.showMessageDialog(
-                        frame,
-                        "Thông tin thiết bị:\nIP: 192.168.0.199\nModel: ONVIF Camera",
-                        "Device Info",
-                        JOptionPane.INFORMATION_MESSAGE
-                )
-        );
-
-        wifiItem.addActionListener(e ->
-                JOptionPane.showMessageDialog(
-                        frame,
-                        "WiFi Status: Connected\nSSID: Camera-WiFi\nSignal: -65 dBm",
-                        "WiFi Info",
-                        JOptionPane.INFORMATION_MESSAGE
-                )
-        );
-
-        menuDevice.add(infoItem);
-        menuDevice.add(wifiItem);
-
-        menuBar.add(menuDevice);
-
-        // Gắn menu bar vào frame
-        frame.setJMenuBar(menuBar);
-
-
         frame.add(video);
         frame.setVisible(true);
     }
