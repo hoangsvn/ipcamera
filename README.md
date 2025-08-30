@@ -7,7 +7,7 @@
 - Xem video camera qua **RTSP**
 - Lấy thông tin **Device** (Manufacturer, Model, Firmware…)
 - Lấy thông tin **Network** (IP, MAC, Wi-Fi)
-- Điều khiển **PTZ** (Pan, Tilt, Zoom) (↑ ↓ ← →)  nếu camera hỗ trợ
+- Điều khiển **PTZ** (Pan, Tilt, Zoom) ↑ ↓ ← → nếu camera hỗ trợ
 
 Ứng dụng được build dưới dạng **fat JAR** cho Windows, tích hợp các thư viện native cần thiết.
 
@@ -21,7 +21,9 @@
 
 ---
 
-## Cài đặt
+## Chạy ứng dụng
 
-1. Tải file **fat JAR**:  
+Mở terminal / command prompt trong thư mục chứa file JAR và chạy lệnh:
 
+```bash
+java -jar ipcamera-1.0.0-windows.jar <camera-ip> <username> <password>
