@@ -15,7 +15,7 @@ configurations {
 }
 dependencies {
     implementation("org.bytedeco:javacv:1.5.11")
-//    implementation("org.bytedeco:ffmpeg:6.1.2-1.5.11:windows-x86_64")
+    implementation("org.bytedeco:ffmpeg:6.1.2-1.5.11:windows-x86_64")
 }
 
 

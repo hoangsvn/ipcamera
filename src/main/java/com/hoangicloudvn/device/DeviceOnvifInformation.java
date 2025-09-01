@@ -7,11 +7,11 @@ public record DeviceOnvifInformation(String manufacturer, String model,
     @Override
     public String toString() {
         return String.format("""
-                Manufacturer: %s
                 Model: %s
-                Firmware: %s
                 Serial: %s
+                Firmware: %s
                 Hardware: %s
-                """, manufacturer, model, firmwareVersion, serialNumber, hardwareId);
+                Manufacturer: %s
+                """, model, serialNumber, firmwareVersion, hardwareId, manufacturer);
     }
 }

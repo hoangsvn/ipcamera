@@ -1,82 +1,69 @@
 package com.hoangicloudvn;
 
-import com.hoangicloudvn.device.DeviceNetworkInterface;
-import com.hoangicloudvn.device.DeviceOnvifInformation;
 import com.hoangicloudvn.device.OnvifDevice;
 import com.hoangicloudvn.ptz.OnvifPtz;
-import com.hoangicloudvn.rtsp.DeviceRTSPGrabber;
-import com.hoangicloudvn.video.BasePanel;
+import com.hoangicloudvn.rtsp.PlayGrabber;
+import com.hoangicloudvn.rtsp.RTSGGrabber;
+import com.hoangicloudvn.stream.BaseAudio;
+import com.hoangicloudvn.stream.BaseStream;
 
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        String ip;
+        String username;
+        String password;
+
+        // Nếu không đủ 3 tham số → hiện form nhập
         if (args.length < 3) {
-            return;
+            JTextField ipField = new JTextField(15);
+            JTextField userField = new JTextField(10);
+            JPasswordField passField = new JPasswordField(10);
+
+            JPanel panel = new JPanel(new GridLayout(3, 2, 5, 5));
+            panel.add(new JLabel("IP:"));
+            panel.add(ipField);
+            panel.add(new JLabel("Username:"));
+            panel.add(userField);
+            panel.add(new JLabel("Password:"));
+            panel.add(passField);
+
+            int result = JOptionPane.showConfirmDialog(
+                    null,
+                    panel,
+                    "Enter Camera Credentials",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result != JOptionPane.OK_OPTION) {
+                return;
+            }
+
+            ip = ipField.getText().trim();
+            username = userField.getText().trim();
+            password = new String(passField.getPassword());
+        } else {
+            ip = args[0];
+            username = args[1];
+            password = args[2];
         }
 
-        OnvifDevice camera = new OnvifDevice(args[0], args[1], args[2]);
-
-        OnvifPtz ptzClient = new OnvifPtz(camera, 5000);
-        BasePanel panel = new BasePanel();
-        DeviceRTSPGrabber grabber = new DeviceRTSPGrabber(camera, 554, 1920, 1080, panel);
-        panel.getFrame().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        ptzClient.move(0.0f, 0.5f, 0.0f);
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        ptzClient.move(0.0f, -0.5f, 0.0f);
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        ptzClient.move(-0.5f, 0.0f, 0.0f);
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        ptzClient.move(0.5f, 0.0f, 0.0f);
-                        break;
-                }
-            }
-        });
-        JMenuBar menuBar = getJMenuBar(panel, ptzClient);
-        panel.getFrame().setJMenuBar(menuBar);
-        panel.getFrame().setVisible(true);
+        int init = 50;
+        OnvifDevice camera = new OnvifDevice(ip, username, password);
+        RTSGGrabber grabber =new RTSGGrabber(camera,554);
         grabber.run();
 
-    }
+        OnvifPtz ptzClient = new OnvifPtz(camera, 5000);
+        BaseStream stream = new BaseStream(camera, ptzClient,grabber, 16 * init, 9 * init);
+        BaseAudio audio = new BaseAudio();
 
-    private static JMenuBar getJMenuBar(BasePanel panel, OnvifPtz ptzClient) {
-        JMenuBar menuBar = new JMenuBar();
-
-        DeviceOnvifInformation info = ptzClient.getDeviceonvifInfo();
-        DeviceNetworkInterface net = ptzClient.getNetWorkInterface();
-        JMenuItem infoItem = new JMenuItem("Info "+info.model());
-        JMenuItem wifiItem = new JMenuItem("Wifi "+net.name());
-
-
-        infoItem.addActionListener(e ->
-                JOptionPane.showMessageDialog(
-                        panel.getFrame(),
-                        info.toString(),
-                        "Device Info",
-                        JOptionPane.INFORMATION_MESSAGE
-                )
-        );
-
-        wifiItem.addActionListener(e ->
-                JOptionPane.showMessageDialog(
-                        panel.getFrame(),
-                        net.toString(),
-                        "WiFi Info",
-                        JOptionPane.INFORMATION_MESSAGE
-                )
-        );
-        menuBar.add(infoItem);
-        menuBar.add(wifiItem);
-        return menuBar;
+        PlayGrabber view = new PlayGrabber(grabber, stream, audio);
+        view.run();
     }
 }

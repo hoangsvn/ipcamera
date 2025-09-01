@@ -2,6 +2,5 @@ package com.hoangicloudvn.rtsp;
 
 public interface Grabber {
 
-
-    void run();
+    void run() throws Exception;
 }
