@@ -1,10 +1,6 @@
 package com.hoangicloudvn.stream;
 
-import com.hoangicloudvn.device.OnvifDevice;
-import org.bytedeco.javacv.CanvasFrame;
-
 import javax.sound.sampled.*;
-import javax.swing.*;
 
 
 public class BaseAudio implements Audio {
@@ -12,6 +8,7 @@ public class BaseAudio implements Audio {
 
     SourceDataLine soundLine;
     DataLine.Info info;
+
     @Override
     public void init(AudioFormat audioFormat) {
         info = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -27,7 +24,7 @@ public class BaseAudio implements Audio {
 
     @Override
     public void update(byte[] buff) {
-        soundLine.write(buff , 0 ,buff.length);
+        soundLine.write(buff, 0, buff.length);
     }
 
     @Override

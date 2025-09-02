@@ -26,4 +26,4 @@
 Mở terminal / command prompt trong thư mục chứa file JAR và chạy lệnh:
 
 ```bash
-java -jar ipcamera-1.0.0-windows.jar <camera-ip> <username> <password>
+java -jar ipcamera-1.0.0.jar <camera-ip> <username> <password>

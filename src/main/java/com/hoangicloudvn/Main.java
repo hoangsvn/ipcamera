@@ -3,7 +3,7 @@ package com.hoangicloudvn;
 import com.hoangicloudvn.device.OnvifDevice;
 import com.hoangicloudvn.ptz.OnvifPtz;
 import com.hoangicloudvn.rtsp.PlayGrabber;
-import com.hoangicloudvn.rtsp.RTSGGrabber;
+import com.hoangicloudvn.rtsp.RTSPGrabber;
 import com.hoangicloudvn.stream.BaseAudio;
 import com.hoangicloudvn.stream.BaseStream;
 
@@ -56,11 +56,11 @@ public class Main {
 
         int init = 50;
         OnvifDevice camera = new OnvifDevice(ip, username, password);
-        RTSGGrabber grabber =new RTSGGrabber(camera,554);
+        RTSPGrabber grabber = new RTSPGrabber(camera, 554);
         grabber.run();
 
         OnvifPtz ptzClient = new OnvifPtz(camera, 5000);
-        BaseStream stream = new BaseStream(camera, ptzClient,grabber, 16 * init, 9 * init);
+        BaseStream stream = new BaseStream(camera, ptzClient, grabber, 16 * init, 9 * init);
         BaseAudio audio = new BaseAudio();
 
         PlayGrabber view = new PlayGrabber(grabber, stream, audio);

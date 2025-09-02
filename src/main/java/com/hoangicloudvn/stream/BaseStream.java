@@ -4,36 +4,63 @@ import com.hoangicloudvn.device.DeviceNetworkInterface;
 import com.hoangicloudvn.device.DeviceOnvifInformation;
 import com.hoangicloudvn.device.OnvifDevice;
 import com.hoangicloudvn.ptz.OnvifPtz;
-import com.hoangicloudvn.ptz.Ptz;
-import com.hoangicloudvn.rtsp.RTSGGrabber;
+import com.hoangicloudvn.rtsp.RTSPGrabber;
 import org.bytedeco.javacv.CanvasFrame;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 
 public class BaseStream implements Video {
     CanvasFrame videoFrame;
     OnvifDevice onvifDevice;
     OnvifPtz onvifPtz;
-    RTSGGrabber grabber;
-    int wight ;
+    RTSPGrabber grabber;
+    int wight;
     int height;
-    public BaseStream(OnvifDevice onvifDevice, OnvifPtz onvifPtz, RTSGGrabber grabber, int wight, int height){
-        this.onvifDevice =onvifDevice;
+
+    public BaseStream(OnvifDevice onvifDevice, OnvifPtz onvifPtz, RTSPGrabber grabber, int wight, int height) {
+        this.onvifDevice = onvifDevice;
         this.grabber = grabber;
-        this.onvifPtz =onvifPtz;
+        this.onvifPtz = onvifPtz;
         this.wight = wight;
-        this.height =height;
+        this.height = height;
     }
+
+    public static String getFullStreamInfo(FFmpegFrameGrabber grabber) {
+        StringBuilder sb = new StringBuilder();
+
+        // Format info
+        sb.append("format: ").append(grabber.getFormat()).append("\n");
+        sb.append("video_codec: ").append(grabber.getVideoCodecName()).append("\n");
+        sb.append("audio_codec: ").append(grabber.getAudioCodecName()).append("\n");
+        sb.append("resolution: ")
+                .append(grabber.getImageWidth())
+                .append("x")
+                .append(grabber.getImageHeight())
+                .append("\n");
+        sb.append("frame_rate: ").append(grabber.getFrameRate()).append("\n");
+        sb.append("audio_channels: ").append(grabber.getAudioChannels()).append("\n");
+        sb.append("sample_rate: ").append(grabber.getSampleRate()).append("\n");
+
+        // Format-level metadata
+        grabber.getMetadata().forEach((k, v) -> sb.append(k).append(": ").append(v).append("\n"));
+
+        // Video metadata
+        grabber.getVideoMetadata().forEach((k, v) -> sb.append("video_").append(k).append(": ").append(v).append("\n"));
+
+        // Audio metadata
+        grabber.getAudioMetadata().forEach((k, v) -> sb.append("audio_").append(k).append(": ").append(v).append("\n"));
+
+        return sb.toString();
+    }
+
     @Override
     public void init() {
 
-        videoFrame = new CanvasFrame(String.format("Stream IP:%s",onvifDevice.ip()),CanvasFrame.getDefaultGamma() / grabber.getGrabber().getGamma() );
+        videoFrame = new CanvasFrame(String.format("Stream IP:%s", onvifDevice.ip()), CanvasFrame.getDefaultGamma() / grabber.getGrabber().getGamma());
         videoFrame.setCanvasSize(wight, height);
         videoFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar Bar = new JMenuBar();
@@ -51,30 +78,30 @@ public class BaseStream implements Video {
         menu.add(metadata);
 
         infoItem.addActionListener(e ->
-            JOptionPane.showMessageDialog(
-                videoFrame,
-                info.toString(),
-                "Device Info",
-                JOptionPane.INFORMATION_MESSAGE
-            )
+                JOptionPane.showMessageDialog(
+                        videoFrame,
+                        info.toString(),
+                        "Device Info",
+                        JOptionPane.INFORMATION_MESSAGE
+                )
         );
 
         wifiItem.addActionListener(e ->
-            JOptionPane.showMessageDialog(
-                videoFrame,
-                net.toString(),
-                "WiFi Info",
-                JOptionPane.INFORMATION_MESSAGE
-            )
+                JOptionPane.showMessageDialog(
+                        videoFrame,
+                        net.toString(),
+                        "WiFi Info",
+                        JOptionPane.INFORMATION_MESSAGE
+                )
         );
 
         metadata.addActionListener(e ->
-            JOptionPane.showMessageDialog(
-                videoFrame,
-                getFullStreamInfo(grabber.getGrabber()),
-                "Metadata",
-                JOptionPane.INFORMATION_MESSAGE
-            )
+                JOptionPane.showMessageDialog(
+                        videoFrame,
+                        getFullStreamInfo(grabber.getGrabber()),
+                        "Metadata",
+                        JOptionPane.INFORMATION_MESSAGE
+                )
         );
 
         Bar.add(menu);
@@ -126,33 +153,5 @@ public class BaseStream implements Video {
     @Override
     public void stop() {
         videoFrame.dispose();
-    }
-
-    public static String getFullStreamInfo(FFmpegFrameGrabber grabber) {
-        StringBuilder sb = new StringBuilder();
-
-        // Format info
-        sb.append("format: ").append(grabber.getFormat()).append("\n");
-        sb.append("video_codec: ").append(grabber.getVideoCodecName()).append("\n");
-        sb.append("audio_codec: ").append(grabber.getAudioCodecName()).append("\n");
-        sb.append("resolution: ")
-                .append(grabber.getImageWidth())
-                .append("x")
-                .append(grabber.getImageHeight())
-                .append("\n");
-        sb.append("frame_rate: ").append(grabber.getFrameRate()).append("\n");
-        sb.append("audio_channels: ").append(grabber.getAudioChannels()).append("\n");
-        sb.append("sample_rate: ").append(grabber.getSampleRate()).append("\n");
-
-        // Format-level metadata
-        grabber.getMetadata().forEach((k, v) -> sb.append(k).append(": ").append(v).append("\n"));
-
-        // Video metadata
-        grabber.getVideoMetadata().forEach((k, v) -> sb.append("video_").append(k).append(": ").append(v).append("\n"));
-
-        // Audio metadata
-        grabber.getAudioMetadata().forEach((k, v) -> sb.append("audio_").append(k).append(": ").append(v).append("\n"));
-
-        return sb.toString();
     }
 }

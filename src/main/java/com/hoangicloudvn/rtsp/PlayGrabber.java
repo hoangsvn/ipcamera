@@ -5,18 +5,17 @@ import com.hoangicloudvn.stream.Video;
 import org.bytedeco.javacv.Frame;
 
 import javax.sound.sampled.AudioFormat;
-import javax.swing.*;
 import java.nio.ShortBuffer;
 
 public class PlayGrabber implements Grabber {
 
-    RTSGGrabber grabber;
+    RTSPGrabber grabber;
     Video render;
     Audio audio;
 
 
-    public PlayGrabber(RTSGGrabber grabber, Video render , Audio audio) {
-        this.grabber =grabber;
+    public PlayGrabber(RTSPGrabber grabber, Video render, Audio audio) {
+        this.grabber = grabber;
         this.render = render;
         this.audio = audio;
 
