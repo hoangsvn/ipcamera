@@ -5,6 +5,10 @@ import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 
 import javax.swing.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class RTSPGrabber {
 
@@ -19,7 +23,7 @@ public class RTSPGrabber {
 
     }
 
-    public void run() throws Exception {
+    public void run() {
         grabber = new FFmpegFrameGrabber(String.format(
                 "rtsp://%s:%s@%s:%d/onvif1",
                 device.username(),
@@ -30,21 +34,28 @@ public class RTSPGrabber {
         grabber.setAudioChannels(1);
         grabber.setSampleRate(8000);
         grabber.setAudioCodec(avcodec.AV_CODEC_ID_PCM_ALAW);
-        boolean connected = false;
-        while (!connected) {
+
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> future = executor.submit(() -> {
+                try {
+                    grabber.start();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
             try {
-                grabber.start();
-                connected = true;
+                future.get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
+                future.cancel(true);
                 JOptionPane.showMessageDialog(
                         null,
-                        String.format("Failed to connect to camera %s.", device.ip()),
-                        "Connection Error",
+                        String.format("Failed to connect to camera:%s", device.ip()),
+                        "Connection",
                         JOptionPane.ERROR_MESSAGE
                 );
-
                 System.exit(0);
-
+            } finally {
+                executor.shutdownNow();
             }
         }
     }
