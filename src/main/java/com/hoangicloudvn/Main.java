@@ -46,14 +46,14 @@ public class Main {
             JPanel panel = new JPanel(new GridLayout(5, 2, 5, 5));
             panel.add(new JLabel("History:"));
             panel.add(historyBox);
-            panel.add(new JLabel("Action"));
-            panel.add(deleteButton);
             panel.add(new JLabel("IP:"));
             panel.add(ipField);
             panel.add(new JLabel("Username:"));
             panel.add(userField);
             panel.add(new JLabel("Password:"));
             panel.add(passField);
+            panel.add(new JLabel("Action"));
+            panel.add(deleteButton);
             panel.setPreferredSize(new Dimension(600, 150));
 
             historyBox.addActionListener(e -> {
@@ -64,6 +64,7 @@ public class Main {
                     passField.setText(selected.password());
                 }
             });
+            Object[] options = {"OK", "Cancel", "Delete"};
 
             int result = JOptionPane.showConfirmDialog(
                     null,
